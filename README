@@ -1,0 +1,25 @@
+This is a runtime contract/type checker for Erlang -spec declarations (*)
+
+This package allows for calling a function and checks that all
+contracts are valid.  Also contains a command line version.
+
+  > checker:run(M, F, Args).
+
+Runs a process where all calls to modules with -spec contracts will be
+checked before and after running the function.  This behaviour is then
+recursively applied to any further function calls from the original
+callee.  The contract checking behaviour will also be inherited by any
+spawned processes from the original call.  Results from the contract
+checking will be logged using error_logger:format/2 and
+error_logger:info_msg/2.
+
+Note that all involved modules will have to be compiled with
+debug_info for the contract checking to function properly.  Any module
+lacking debug_info will break the recursive chain (**).
+
+
+(*) It also contains a rudimentary converter from the old @spec
+    declarations (see bin/@spec2-spec.awk)
+
+(**) This can of course be used as a feature since you may not always
+want to contract check the lists module.
