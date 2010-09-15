@@ -1,0 +1,36 @@
+###-*-makefile-*-   ; force emacs to enter makefile-mode
+
+ERL=@ERL@
+ERLC=@ERLC@
+DIALYZER=@DIALYZER@
+
+ERLC_FLAGS+=-W +debug_info +warn_unused_imports +warn_untyped_record +warn_missing_spec_exported
+ifeq ($(TYPE), debug)
+ERLC_FLAGS+=+debug_info -Ddebug
+endif
+
+EMAKEFILE=Emakefile
+
+ERL_SOURCES := $(wildcard *.erl)
+ERL_HEADERS := $(wildcard *.hrl) $(wildcard ../include/*.hrl)
+ERL_OBJECTS := $(ERL_SOURCES:%.erl=../ebin/%.beam)
+ERL_DOCUMENTS := $(wildcard ../doc/*.html)
+MODULES := $(ERL_SOURCES:%.erl=%)
+
+APP_SOURCES := $(wildcard *.app.src)
+APP_OBJECTS := $(APP_SOURCES:%.app.src=../ebin/%.app)
+
+APPSCRIPT = '$$vsn=shift; $$mods=""; while(@ARGV){ $$_=shift; s/^([A-Z].*)$$/\'\''$$1\'\''/; $$mods.=", " if $$mods; $$mods .= $$_; } while(<>) { s/%VSN%/$$vsn/; s/%MODULES%/$$mods/; print; }'
+
+# Targets
+
+../ebin/%.app: %.app.src ../vsn.mk Makefile
+	perl -e $(APPSCRIPT) "$(VSN)" $(MODULES) < $< > $@
+
+../ebin/%.beam: %.erl
+	$(ERLC) $(ERLC_FLAGS) -o ../ebin $<
+
+../doc/%.html: %.erl
+	${ERL} -noshell -run edoc file $< -run init stop
+	mv $*.html ../doc/
+

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ERL=@ERL@
+OTP=@ERLDIR@
+ROOTDIR=@CODEFIER_ROOTDIR@
+
+${ERL} -pa ${ROOTDIR}/lib/*/ebin -pa ${OTP}/lib/*/ebin

@@ -1,0 +1,38 @@
+AC_INIT
+
+dnl work out who the cpu, vendor and OS are
+AC_CANONICAL_SYSTEM
+AC_DEFINE_UNQUOTED(CPU_VENDOR_OS, "$target")
+
+CODEFIER_ROOTDIR=$(dirname `pwd`)
+AC_SUBST(CODEFIER_ROOTDIR)
+
+dnl Programs
+
+AC_PROG_CC
+AC_PROG_INSTALL
+
+dnl ERL="/home/luna/devel/HiPE/otp/bin/erl"
+AC_PATH_PROG(ERL, erl, erl)
+ERLDIR=`awk -F= '/ROOTDIR=/ { print [$]2; exit; }' $ERL`
+AC_SUBST(ERLDIR)
+ERLC=${ERLDIR}"/bin/erlc"
+DIALYZER=${ERLDIR}"/bin/dialyzer"
+AC_SUBST(ERLC)
+AC_SUBST(DIALYZER)
+
+define(OUTPUT_FILES,
+	../make/include.mk
+	../bin/contracts
+	../make/subdir.mk
+)
+
+AC_OUTPUT(OUTPUT_FILES,
+[
+date > _tstamp_h
+cat > _gen_files <<gen_files_EOF
+OUTPUT_FILES
+gen_files_EOF
+chmod u+x ../bin/contracts
+])dnl
+
