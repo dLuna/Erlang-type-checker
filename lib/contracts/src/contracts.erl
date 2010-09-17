@@ -49,6 +49,8 @@ add_contracts(Cerl0) ->
   Specs = lists:zf(fun is_spec/1, cerl:module_attrs(Cerl0)),
   Types = lists:zf(fun is_type/1, cerl:module_attrs(Cerl0)),
   TypeList = [{attribute, fixme, type, Type} || Type <- Types],
+  %% FIXME: some sort of data format change of core Erlang makes the
+  %% next line fail!  Can't spend the time fixing it at the moment.
   M = cerl:atom_val(cerl:module_name(Cerl0)),
   {ok, Dict} = dialyzer_utils:get_record_and_type_info(TypeList),
   NewMDs = [insert_verification(MD, Specs, Dict, M)
